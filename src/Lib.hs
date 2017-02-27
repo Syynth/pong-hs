@@ -56,19 +56,3 @@ loop window state = do
         case event of
             Just SFEvtClosed -> return ()
             _ -> renderGame window nextState >>= (\_ -> loop window nextState)
-
-renderShape :: RenderWindow -> IO ()
-renderShape window = do
-
-        clearRenderWindow window black
-
-        either <- createRectangleShape
-        case either of
-            Left _ -> return ()
-            Right rect -> do
-                    setFillColor rect white
-                    setSize rect (Vec2f 100 100)
-                    setPosition rect (Vec2f 100 100)
-                    drawRectangle window rect Nothing
-
-        display window
