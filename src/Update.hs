@@ -14,7 +14,11 @@ updateTime state = do
         return (state { elapsedTime = time })
 
 updateKeyStates :: Maybe SFEvent -> GameState -> GameState
-updateKeyStates event state = state
+updateKeyStates Nothing state = state
+updateKeyStates (Just event) state = case event of
+        SFEvtLostFocus -> state { paused = True }
+        SFEvtKeyPressed code _ _ _ _ -> state
+        _ -> state
 
 updateGame :: GameState -> GameState
 updateGame = id
