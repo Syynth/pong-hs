@@ -18,4 +18,5 @@ data GameState = GameState { elapsedTime :: Time
                            , keyStates :: KeyStates
                            , clock :: Clock
                            , score :: (Int, Int)
+                           , paused :: Bool
                            }

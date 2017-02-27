@@ -38,6 +38,7 @@ createGame = do
                               , keyStates = KeyStates 0 0
                               , clock = clock
                               , score = (0, 0)
+                              , paused = True
                               }
 
         loop window state
@@ -48,7 +49,10 @@ loop :: RenderWindow -> GameState -> IO ()
 loop window state = do
 
         event <- pollEvent window
-        state' <- (updateTime . updateKeyStates event $ state) >>= return . updateGame
+        state' <- updateTime state >>=
+                    return . updateKeyStates event >>=
+                    return . updateGame
+--        (updateTime . updateKeyStates event $ state) >>= return . updateGame
 
         case event of
             Just SFEvtClosed -> return ()
