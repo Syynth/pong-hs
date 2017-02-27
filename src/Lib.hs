@@ -33,6 +33,7 @@ createGame = do
         let rightPaddle = Paddle (640.0 - 48.0, 32.0) (16, 48)
 
         let state = GameState { elapsedTime = time
+                              , deltaTime = 0
                               , paddles = (leftPaddle, rightPaddle)
                               , ball = Ball (fst gameSize / 2.0, snd gameSize / 2.0) 8.0
                               , keyStates = KeyStates 0 0
@@ -52,7 +53,6 @@ loop window state = do
         state' <- updateTime state >>=
                     return . updateKeyStates event >>=
                     return . updateGame
---        (updateTime . updateKeyStates event $ state) >>= return . updateGame
 
         case event of
             Just SFEvtClosed -> return ()
