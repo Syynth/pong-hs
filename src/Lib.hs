@@ -3,7 +3,27 @@ module Lib
     ( createGame
     ) where
 
+import SFML.Window
 
+createGame :: IO ()
+createGame = do
+        desktopMode <- getDesktopMode
+        fsModes <- getFullscreenModes
+
+        let contextSettings = Just $ ContextSettings 24 8 0 1 2 [ContextDefault]
+        window <- createWindow (VideoMode 640 480 32) "Pong" [SFDefaultStyle] contextSettings
+
+        loop window
+        destroy window
+
+loop :: Window -> IO ()
+loop window = do
+        event <- waitEvent window
+        case event of
+            Just SFEvtClosed -> return ()
+            _ -> loop window
+
+{-
 import Control.Monad
 import Data.Foldable (for_)
 import Foreign.C.Types
@@ -58,3 +78,4 @@ createGame = do
     SDL.destroyRenderer renderer
     SDL.destroyWindow window
     SDL.quit
+-}
