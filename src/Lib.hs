@@ -26,6 +26,8 @@ createGame = do
                     [SFDefaultStyle]
                     contextSettings
 
+        setVSync window True
+
         clock <- createClock
         time <- getElapsedTime clock
 
@@ -53,6 +55,9 @@ loop window state = do
         state' <- updateTime state >>=
                     return . updateKeyStates event >>=
                     return . updateGame
+
+--        let (_, right) = paddles state'
+--        putStrLn $ show right
 
         case event of
             Just SFEvtClosed -> return ()
