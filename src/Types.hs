@@ -2,13 +2,8 @@ module Types where
 
 import SFML.System
 
-type X = Double
-type Y = Double
-type Width = Double
-type Height = Double
-
-type Position = (X, Y)
-type Size = (Width, Height)
+type Position = (Double, Double)
+type Size = (Double, Double)
 
 data Paddle = Paddle Position Size
 data Ball = Ball Position Double
