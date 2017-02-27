@@ -2,15 +2,18 @@ module Types where
 
 import SFML.System
 
+instance Show Clock where
+    show _ = "Clock"
+
 type Position = (Float, Float)
 type Size = (Float, Float)
 
-data Paddle = Paddle Position Size
-data Ball = Ball Position Float
+data Paddle = Paddle Position Size deriving (Show)
+data Ball = Ball Position Float deriving (Show)
 
 data KeyStates = KeyStates { up :: Float
                            , down :: Float
-                           }
+                           } deriving (Show)
 
 data GameState = GameState { elapsedTime :: Time
                            , deltaTime :: Float
@@ -20,4 +23,4 @@ data GameState = GameState { elapsedTime :: Time
                            , clock :: Clock
                            , score :: (Int, Int)
                            , paused :: Bool
-                           }
+                           } deriving (Show)
