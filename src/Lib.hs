@@ -37,22 +37,19 @@ createGame = do
                               , ball = Ball (fst gameSize / 2.0, snd gameSize / 2.0) 8.0
                               , keyStates = KeyStates 0 0
                               , clock = clock
+                              , score = (0, 0)
                               }
 
         loop window state
-        destroy window
 
-updateTime :: GameState -> IO GameState
-updateTime state = do
-        time <- getElapsedTime $ clock state
-        return (state { elapsedTime = time })
+        destroy window
 
 loop :: RenderWindow -> GameState -> IO ()
 loop window state = do
 
         event <- pollEvent window
-        nextState <- updateTime state >>= return . updateGame
+        state' <- (updateTime . updateKeyStates event $ state) >>= return . updateGame
 
         case event of
             Just SFEvtClosed -> return ()
-            _ -> renderGame window nextState >>= (\_ -> loop window nextState)
+            _ -> renderGame window state' >>= (\_ -> loop window state')

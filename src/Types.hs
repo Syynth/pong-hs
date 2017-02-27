@@ -17,4 +17,5 @@ data GameState = GameState { elapsedTime :: Time
                            , ball :: Ball
                            , keyStates :: KeyStates
                            , clock :: Clock
+                           , score :: (Int, Int)
                            }
