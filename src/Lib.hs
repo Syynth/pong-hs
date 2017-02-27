@@ -4,6 +4,8 @@ module Lib
     ) where
 
 import Types
+import Update
+import Render
 
 import SFML.Window
 import SFML.Graphics
@@ -32,7 +34,7 @@ createGame = do
 
         let state = GameState { elapsedTime = time
                               , paddles = (leftPaddle, rightPaddle)
-                              , ball = Ball (fst gameSize / 2.0, snd gameSize / 2.0) 16.0
+                              , ball = Ball (fst gameSize / 2.0, snd gameSize / 2.0) 8.0
                               , keyStates = KeyStates 0 0
                               , clock = clock
                               }
@@ -49,11 +51,11 @@ loop :: RenderWindow -> GameState -> IO ()
 loop window state = do
 
         event <- pollEvent window
-        updatedTime <- updateTime state
+        nextState <- updateTime state >>= return . updateGame
 
         case event of
             Just SFEvtClosed -> return ()
-            _ -> renderShape window >>= (\_ -> loop window updatedTime)
+            _ -> renderGame window nextState >>= (\_ -> loop window nextState)
 
 renderShape :: RenderWindow -> IO ()
 renderShape window = do
