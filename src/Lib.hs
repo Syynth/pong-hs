@@ -3,7 +3,13 @@ module Lib
     ( createGame
     ) where
 
+import Types
+
 import SFML.Window
+import SFML.Graphics
+
+gameSize :: Size
+gameSize = (640.0, 480.0)
 
 createGame :: IO ()
 createGame = do
@@ -11,71 +17,56 @@ createGame = do
         fsModes <- getFullscreenModes
 
         let contextSettings = Just $ ContextSettings 24 8 0 1 2 [ContextDefault]
-        window <- createWindow (VideoMode 640 480 32) "Pong" [SFDefaultStyle] contextSettings
+        window <- createRenderWindow
+                    (VideoMode
+                        (round $ fst gameSize) (round $ snd gameSize) 32)
+                    "Pong"
+                    [SFDefaultStyle]
+                    contextSettings
 
-        loop window
+        clock <- createClock
+        time <- getElapsedTime clock
+
+        let leftPaddle = Paddle (32.0, 32.0) (16, 48)
+        let rightPaddle = Paddle (640.0 - 48.0, 32.0) (16, 48)
+
+        let state = GameState { elapsedTime = time
+                              , paddles = (leftPaddle, rightPaddle)
+                              , ball = Ball (fst gameSize / 2.0, snd gameSize / 2.0) 16.0
+                              , keyStates = KeyStates 0 0
+                              , clock = clock
+                              }
+
+        loop window state
         destroy window
 
-loop :: Window -> IO ()
-loop window = do
-        event <- waitEvent window
+updateTime :: GameState -> IO GameState
+updateTime state = do
+        time <- getElapsedTime $ clock state
+        return (state { elapsedTime = time })
+
+loop :: RenderWindow -> GameState -> IO ()
+loop window state = do
+
+        event <- pollEvent window
+        updatedTime <- updateTime state
+
         case event of
             Just SFEvtClosed -> return ()
-            _ -> display window >>= (\_ -> loop window)
+            _ -> renderShape window >>= (\_ -> loop window updatedTime)
 
-{-
-import Control.Monad
-import Data.Foldable (for_)
-import Foreign.C.Types
-import SDL.Vect
-import SDL (($=))
-import qualified SDL
+renderShape :: RenderWindow -> IO ()
+renderShape window = do
 
-screenWidth, screenHeight :: CInt
-(screenWidth, screenHeight) = (640, 480)
+        clearRenderWindow window black
 
-createGame :: IO ()
-createGame = do
-    SDL.initialize [SDL.InitVideo]
+        either <- createRectangleShape
+        case either of
+            Left _ -> return ()
+            Right rect -> do
+                    setFillColor rect white
+                    setSize rect (Vec2f 100 100)
+                    setPosition rect (Vec2f 100 100)
+                    drawRectangle window rect Nothing
 
-    SDL.HintRenderScaleQuality $= SDL.ScaleLinear
-    do
-        renderQuality <- SDL.get SDL.HintRenderScaleQuality
-        when (renderQuality /= SDL.ScaleLinear) $
-            putStrLn "Warning: Linear Texture filtering not enabled!"
-
-    window <-
-        SDL.createWindow
-            "Pong"
-            SDL.defaultWindow { SDL.windowInitialSize = V2 screenWidth screenHeight }
-    SDL.showWindow window
-
-    renderer <-
-        SDL.createRenderer
-            window
-            (-1)
-            SDL.RendererConfig
-                { SDL.rendererType = SDL.AcceleratedRenderer
-                , SDL.rendererTargetTexture = False
-                }
-
-    SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
-
-    let loop = do
-            events <- SDL.pollEvents
-            let quit = elem SDL.QuitEvent $ map SDL.eventPayload events
-
-            SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
-            SDL.clear renderer
-
-            SDL.present renderer
-
-            unless quit loop
-
-    loop
-
-
-    SDL.destroyRenderer renderer
-    SDL.destroyWindow window
-    SDL.quit
--}
+        display window
