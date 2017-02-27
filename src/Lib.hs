@@ -21,7 +21,7 @@ loop window = do
         event <- waitEvent window
         case event of
             Just SFEvtClosed -> return ()
-            _ -> loop window
+            _ -> display window >>= (\_ -> loop window)
 
 {-
 import Control.Monad
