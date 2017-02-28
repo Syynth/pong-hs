@@ -19,7 +19,7 @@ gameSize = (640.0, 480.0)
 loadResources :: IO Resources
 loadResources = do
         fontPath <- getDataFileName "Vera.ttf"
-        iconPath <- getDataFileName "_haskell.png"
+        iconPath <- getDataFileName "haskell.png"
         maybeIcon <- imageFromFile iconPath
         let icon = case maybeIcon of
                     Just image -> image

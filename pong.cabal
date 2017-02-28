@@ -13,7 +13,7 @@ build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
 data-dir:            assets/
-data-files:          Vera.ttf, _haskell.png, haskell.bmp
+data-files:          Vera.ttf, haskell.png
 
 library
   hs-source-dirs:      src
@@ -42,4 +42,4 @@ test-suite pong-test
 
 source-repository head
   type:     git
-  location: https://github.com/githubuser/pong
+  location: https://github.com/Syynth/pong-hs
