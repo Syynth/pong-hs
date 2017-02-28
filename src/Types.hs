@@ -8,9 +8,10 @@ instance Show Clock where
 
 type Position = (Float, Float)
 type Size = (Float, Float)
+type Velocity (Float, Float)
 
 data Paddle = Paddle Position Size deriving (Show)
-data Ball = Ball Position Float deriving (Show)
+data Ball = Ball Position Float Velocity deriving (Show)
 
 data KeyStates = KeyStates { up :: Float
                            , down :: Float

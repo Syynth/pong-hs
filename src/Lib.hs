@@ -64,7 +64,7 @@ createGame = do
         let state = GameState { elapsedTime = time
                               , deltaTime = 0
                               , paddles = (leftPaddle, rightPaddle)
-                              , ball = Ball (fst gameSize / 2.0, snd gameSize / 2.0) 8.0
+                              , ball = Ball (fst gameSize / 2.0, snd gameSize / 2.0) 8.0 (0.0, 0.0)
                               , keyStates = KeyStates 0 0
                               , clock = clock
                               , score = (0, 0)
