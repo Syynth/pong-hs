@@ -6,16 +6,21 @@ import SFML.Graphics
 import SFML.System
 import GHC.Float
 
-renderGame :: RenderWindow -> GameState -> IO ()
-renderGame window state = do
+renderGame :: RenderWindow -> Resources -> GameState -> IO ()
+renderGame window res state = do
         clearRenderWindow window black
 
         let (left, right) = paddles state
         renderPaddle window left
         renderPaddle window right
 
+        let paused' = paused state
         let ball' = ball state
-        renderBall window ball'
+
+        if paused'
+            then renderPauseScreen window res
+            else renderBall window ball'
+
 
         display window
 
@@ -41,3 +46,7 @@ renderBall window (Ball (x, y) r) = do
                     setOrigin circle $ Vec2f r r
                     setPosition circle $ Vec2f x y
                     drawCircle window circle Nothing
+
+renderPauseScreen :: RenderWindow -> Resources -> IO ()
+renderPauseScreen window res = do
+        drawText window (pressSpaceToContinue res) Nothing

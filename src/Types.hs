@@ -1,6 +1,7 @@
 module Types where
 
 import SFML.System
+import SFML.Graphics
 
 instance Show Clock where
     show _ = "Clock"
@@ -24,3 +25,8 @@ data GameState = GameState { elapsedTime :: Time
                            , score :: (Int, Int)
                            , paused :: Bool
                            } deriving (Show)
+
+data Resources = Resources { font :: Font
+                           , pressSpaceToContinue :: Text
+                           , icon :: Image
+                           }

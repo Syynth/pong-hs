@@ -7,16 +7,40 @@ import Types
 import Update
 import Render
 
+import Paths_pong
+
+import SFML.Utils
 import SFML.Window
 import SFML.Graphics
 
 gameSize :: Size
 gameSize = (640.0, 480.0)
 
+loadResources :: IO Resources
+loadResources = do
+        fontPath <- getDataFileName "Vera.ttf"
+        iconPath <- getDataFileName "_haskell.png"
+        maybeIcon <- imageFromFile iconPath
+        let icon = case maybeIcon of
+                    Just image -> image
+                    Nothing -> (error $ "Couldn't load image: " ++ iconPath)
+        font <- err $ fontFromFile fontPath
+        text <- err $ createText
+        setTextFont text font
+        setTextCharacterSize text 16
+        setTextColor text white
+        setTextStringU text "Press Space To Play"
+        fRect <- getGlobalBounds text
+        let (width, height) = (fwidth fRect, fheight fRect)
+        setPosition text $ Vec2f (320.0 - width / 2.0) (240 - height / 2.0)
+        return $ Resources font text icon
+
 createGame :: IO ()
 createGame = do
         desktopMode <- getDesktopMode
         fsModes <- getFullscreenModes
+
+        res <- loadResources
 
         let contextSettings = Just $ ContextSettings 24 8 0 1 2 [ContextDefault]
         window <- createRenderWindow
@@ -27,6 +51,9 @@ createGame = do
                     contextSettings
 
         setVSync window True
+        Vec2u width height <- imageSize $ icon res
+        pixels <- getPixels $ icon res
+        setWindowIcon window (fromIntegral width) (fromIntegral height) pixels
 
         clock <- createClock
         time <- getElapsedTime clock
@@ -44,21 +71,20 @@ createGame = do
                               , paused = True
                               }
 
-        loop window state
+        loop window res state
 
+        destroy $ font res
+        destroy $ pressSpaceToContinue res
         destroy window
 
-loop :: RenderWindow -> GameState -> IO ()
-loop window state = do
+loop :: RenderWindow -> Resources -> GameState -> IO ()
+loop window res state = do
 
         event <- pollEvent window
         state' <- updateTime state >>=
                     return . updateKeyStates event >>=
                     return . updateGame
 
---        let (_, right) = paddles state'
---        putStrLn $ show right
-
         case event of
             Just SFEvtClosed -> return ()
-            _ -> renderGame window state' >>= (\_ -> loop window state')
+            _ -> renderGame window res state' >>= (\_ -> loop window res state')
