@@ -2,6 +2,7 @@ module Render (renderGame) where
 
 import Types
 
+import SFML.Utils
 import SFML.Graphics
 import SFML.System
 import GHC.Float
@@ -26,26 +27,20 @@ renderGame window res state = do
 
 renderPaddle :: RenderWindow -> Paddle -> IO ()
 renderPaddle window (Paddle (x, y) (w, h)) = do
-        either <- createRectangleShape
-        case either of
-            Left _ -> return ()
-            Right rect -> do
-                    setFillColor rect white
-                    setSize rect $ Vec2f w h
-                    setPosition rect $ Vec2f x y
-                    drawRectangle window rect Nothing
+        rect <- err createRectangleShape
+        setFillColor rect white
+        setSize rect $ Vec2f w h
+        setPosition rect $ Vec2f x y
+        drawRectangle window rect Nothing
 
 renderBall :: RenderWindow -> Ball -> IO ()
 renderBall window (Ball (x, y) r) = do
-        either <- createCircleShape
-        case either of
-            Left _ -> return ()
-            Right circle -> do
-                    setFillColor circle white
-                    setRadius circle r
-                    setOrigin circle $ Vec2f r r
-                    setPosition circle $ Vec2f x y
-                    drawCircle window circle Nothing
+        rect <- err createRectangleShape
+        setFillColor rect white
+        setSize rect $ Vec2f (r * 2) (r * 2)
+        setOrigin rect $ Vec2f r r
+        setPosition rect $ Vec2f x y
+        drawRectangle window rect Nothing
 
 renderPauseScreen :: RenderWindow -> Resources -> IO ()
 renderPauseScreen window res = do
